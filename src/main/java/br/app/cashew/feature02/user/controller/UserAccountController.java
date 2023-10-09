@@ -1,13 +1,15 @@
 package br.app.cashew.feature02.user.controller;
 
-import br.app.cashew.feature02.user.dto.user.UserEmailChangeDTO;
-import br.app.cashew.feature02.user.dto.user.UserUpdateInfoDTO;
 import br.app.cashew.feature01.authentication.dto.user.UserChangePasswordDTO;
 import br.app.cashew.feature01.authentication.service.authentication.user.UserPasswordService;
+import br.app.cashew.feature02.user.dto.user.input.UniversityUserRequestDTO;
+import br.app.cashew.feature02.user.dto.user.input.UserEmailChangeDTO;
+import br.app.cashew.feature02.user.dto.user.input.UserUpdateInfoDTO;
+import br.app.cashew.feature02.user.dto.user.output.UniversityUserResponseDTO;
 import br.app.cashew.feature02.user.service.UserAccountService;
 import br.app.cashew.feature03.cafeteria.model.universityuser.UniversityUser;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +24,17 @@ public class UserAccountController {
 
     private final UserAccountService userAccountService;
     private final UserPasswordService userPasswordService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public UserAccountController(UserAccountService userAccountService, UserPasswordService userPasswordService) {
+    public UserAccountController(
+            UserAccountService userAccountService,
+            UserPasswordService userPasswordService,
+            ModelMapper modelMapper) {
 
         this.userAccountService = userAccountService;
         this.userPasswordService = userPasswordService;
+        this.modelMapper = modelMapper;
     }
 
     @PutMapping("/password")
@@ -48,6 +55,13 @@ public class UserAccountController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/info")
+    public ResponseEntity<Void> addCpf(@RequestBody Map<String, String> cpf, Authentication authentication) {
+        userAccountService.addCpf(cpf.get("cpf"), authentication.getName());
+        return new ResponseEntity<>(HttpStatus.OK);
+        // TODO criar hibernate constraint para validar CPF
+    }
+
     @PutMapping("/info")
     public ResponseEntity<String> updateNameAndCpfAndEmail(@RequestBody @Valid UserUpdateInfoDTO userUpdateInfoDTO, Authentication authentication) {
 
@@ -62,7 +76,6 @@ public class UserAccountController {
     @GetMapping("/info")
     public ResponseEntity<Map<String, String>> getUserInfo(Authentication authentication) {
 
-        // retorna email, nome, cpf
         Map<String, String> info = userAccountService.getUserInfo(authentication.getName());
 
         return new ResponseEntity<>(info, HttpStatus.OK);
@@ -83,12 +96,29 @@ public class UserAccountController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Transactional
-    @GetMapping("/university_and_campus")
-    public ResponseEntity<List<UniversityUser>> getUniversityAndCampusPreferences(Authentication authentication) {
+    @PostMapping("/university_and_campus_preferences")
+    public ResponseEntity<UniversityUserResponseDTO> addUniversityAndCampusPreferences(@RequestBody @Valid UniversityUserRequestDTO userAdditionalInfoDTO, Authentication authentication) {
+        UniversityUser userPreferences = userAccountService.addUniversityAndCampusPreferences(
+                userAdditionalInfoDTO.getUniversityPublicKey(),
+                userAdditionalInfoDTO.getCampusPublicKey(),
+                authentication.getName());
 
-        List<UniversityUser> userUniversityAndCampusPreferences = userAccountService.getUniversityAndCampusPreferences(authentication.getName());
+        UniversityUserResponseDTO universityUserResponseDTO = convertUniversityUserToUniversityUserResponseDTO(userPreferences);
+        return new ResponseEntity<>(universityUserResponseDTO, HttpStatus.CREATED);
+    }
+    @GetMapping("/university_and_campus_preferences")
+    public ResponseEntity<List<UniversityUserResponseDTO>> getUniversityAndCampusPreferences(Authentication authentication) {
+
+        List<UniversityUserResponseDTO> userUniversityAndCampusPreferences = userAccountService
+                .getUniversityAndCampusPreferences(authentication.getName())
+                .stream()
+                .map(this::convertUniversityUserToUniversityUserResponseDTO)
+                .toList();
 
         return new ResponseEntity<>(userUniversityAndCampusPreferences, HttpStatus.OK);
+    }
+
+    private UniversityUserResponseDTO convertUniversityUserToUniversityUserResponseDTO(UniversityUser universityUser) {
+        return modelMapper.map(universityUser, UniversityUserResponseDTO.class);
     }
 }

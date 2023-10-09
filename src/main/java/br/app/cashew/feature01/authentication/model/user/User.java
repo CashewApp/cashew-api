@@ -3,6 +3,7 @@ package br.app.cashew.feature01.authentication.model.user;
 import br.app.cashew.feature01.authentication.model.PasswordChangeRequest;
 import br.app.cashew.feature01.authentication.model.RefreshToken;
 import br.app.cashew.feature01.authentication.model.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,7 @@ public class User {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -47,14 +49,17 @@ public class User {
     @Column(name = "cpf", unique = true)
     private String cpf;
 
+    @JsonIgnore
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "signUpDate", nullable = false)
     private Calendar signUpDate;
 
+    @JsonIgnore
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "removeDate", nullable = true)
     private Calendar removeDate;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_role",
@@ -63,9 +68,11 @@ public class User {
     )
     private Set<Role> roles;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RefreshToken> tokens;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<PasswordChangeRequest> passwordChangeRequests;
 }

@@ -1,16 +1,26 @@
 package br.app.cashew.feature02.user.service;
 
-import br.app.cashew.feature02.user.dto.user.UserUpdateInfoDTO;
 import br.app.cashew.feature01.authentication.exception.user.UserDoesNotExistsException;
+import br.app.cashew.feature01.authentication.model.user.User;
+import br.app.cashew.feature01.authentication.repository.UserRepository;
+import br.app.cashew.feature02.user.dto.user.input.UserUpdateInfoDTO;
 import br.app.cashew.feature02.user.exception.CpfException;
 import br.app.cashew.feature02.user.exception.EmailChangeRequestException;
+import br.app.cashew.feature02.user.exception.universityuser.MaxQuantityOfUniversityAndCampusPreferencesReached;
+import br.app.cashew.feature02.user.exception.universityuser.UniversityAndCampusNotRelatedException;
+import br.app.cashew.feature02.user.exception.universityuser.UniversityAndCampusPreferenceAlreadyExists;
 import br.app.cashew.feature02.user.model.EmailChangeRequest;
-import br.app.cashew.feature02.user.service.email.EmailService;
-import br.app.cashew.feature03.cafeteria.model.universityuser.UniversityUser;
-import br.app.cashew.feature01.authentication.model.user.User;
 import br.app.cashew.feature02.user.repository.EmailChangeRequestRepository;
+import br.app.cashew.feature02.user.service.email.EmailService;
+import br.app.cashew.feature03.cafeteria.exception.campus.CampusDoesNotExistsException;
+import br.app.cashew.feature03.cafeteria.exception.university.UniversityDoesNotExistsException;
+import br.app.cashew.feature03.cafeteria.model.Campus;
+import br.app.cashew.feature03.cafeteria.model.University;
+import br.app.cashew.feature03.cafeteria.model.universityuser.UniversityUser;
+import br.app.cashew.feature03.cafeteria.model.universityuser.UniversityUserKey;
+import br.app.cashew.feature03.cafeteria.repository.CampusRepository;
+import br.app.cashew.feature03.cafeteria.repository.UniversityRepository;
 import br.app.cashew.feature03.cafeteria.repository.UniversityUserRepository;
-import br.app.cashew.feature01.authentication.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,14 +37,24 @@ public class UserAccountService {
     private final EmailService emailService;
     private final EmailChangeRequestRepository emailChangeRequestRepository;
     private final UniversityUserRepository universityUserRepository;
+    private final UniversityRepository universityRepository;
+    private final CampusRepository campusRepository;
 
     @Autowired
-    public UserAccountService(UserRepository userRepository, EmailService emailService, EmailChangeRequestRepository emailChangeRequestRepository, UniversityUserRepository universityUserRepository) {
+    public UserAccountService(
+            UserRepository userRepository,
+            EmailService emailService,
+            EmailChangeRequestRepository emailChangeRequestRepository,
+            UniversityUserRepository universityUserRepository,
+            UniversityRepository universityRepository,
+            CampusRepository campusRepository) {
 
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.emailChangeRequestRepository = emailChangeRequestRepository;
         this.universityUserRepository = universityUserRepository;
+        this.universityRepository = universityRepository;
+        this.campusRepository = campusRepository;
     }
 
     @Transactional
@@ -113,7 +133,7 @@ public class UserAccountService {
                 dig10 = (char) (r + 48); // converte no respectivo caractere numerico
             }
 
-            // Calculo do 2o. Digito Verificador
+            // Calculo do 2.º. Digito Verificador
             sm = 0;
             peso = 11;
 
@@ -196,6 +216,66 @@ public class UserAccountService {
         User user = userRepository.findByUserPublicKey(uuid)
                 .orElseThrow(() -> new UserDoesNotExistsException("Usuario nao foi possivel ser achado"));
 
-        return universityUserRepository.findByUniversityUserIDUserID(user);
+        return universityUserRepository.findByUniversityUserIDUserID(user.getUserID());
+    }
+
+    public void addCpf(String cpf, String userPublicKey) {
+        User user = userRepository.findByUserPublicKey(UUID.fromString(userPublicKey))
+                .orElseThrow(() -> new UserDoesNotExistsException("Usuario nao existe"));
+
+        if (cpf != null && validateCpf(cpf) && isCpfAvailable(cpf)) {
+            user.setCpf(cpf);
+        }
+        user.setCpf(cpf);
+        userRepository.save(user);
+    }
+    public UniversityUser addUniversityAndCampusPreferences(String universityPublicKey, String campusPublicKey, String userPublicKey) {
+        // ver se o usuario nao excedeu o limite de preferencias salvas
+        User user = userRepository.findByUserPublicKey(UUID.fromString(userPublicKey))
+                .orElseThrow(() -> new UserDoesNotExistsException("Usuario nao existe"));
+
+        if (isMaxQuantityOfUniversityAndCampusPreferencesReached(user.getUserID())) {
+            throw new MaxQuantityOfUniversityAndCampusPreferencesReached(
+                    "Nao e possivel completar o pedido. Numero maximo de preferencias de universidade e campus excedida");
+        }
+        University university = universityRepository.findByUniversityPublicKey(UUID.fromString(universityPublicKey))
+                .orElseThrow(() -> new UniversityDoesNotExistsException("Universidade invalida", "university"));
+
+        Campus campus = campusRepository.findByPublicKey(UUID.fromString(campusPublicKey))
+                .orElseThrow(() -> new CampusDoesNotExistsException("Campus invalido", "campus"));
+
+        // checar se a universidade e campus estao relacionados
+        if (!(isUniversityAndCampusRelated(university, campus))) {
+            throw new UniversityAndCampusNotRelatedException("Universidade e campus invalidos. Universidade e campus passados nao sao relacionados");
+        }
+        // verificar se ele nao esta tentando adicionar uma universidade e ‘campus’ que ja esta adicionada
+        if (isUniversityAndCampusAlreadySavedByUser(user, university, campus)) {
+            throw new UniversityAndCampusPreferenceAlreadyExists("Universidade e campus ja estao adicionados");
+        }
+
+        UniversityUser userPreferences = new UniversityUser();
+        UniversityUserKey universityUserKey = new UniversityUserKey();
+        universityUserKey.setUniversityID(university.getUniversityID());
+        universityUserKey.setUserID(user.getUserID());
+        userPreferences.setUniversityUserID(universityUserKey);
+        userPreferences.setUser(user);
+        userPreferences.setUniversity(university);
+        userPreferences.setCampus(campus);
+        universityUserRepository.save(userPreferences);
+        return userPreferences;
+    }
+
+    private boolean isMaxQuantityOfUniversityAndCampusPreferencesReached(int userID) {
+        int universityAndCampusPreferencesQuantity = universityUserRepository.countByUniversityUserIDUserID(userID);
+
+        return universityAndCampusPreferencesQuantity > 10;
+    }
+
+    private boolean isUniversityAndCampusRelated(University university, Campus campus) {
+        return campus.getUniversity().getUniversityID() == university.getUniversityID();
+    }
+
+    private boolean isUniversityAndCampusAlreadySavedByUser(User user, University university, Campus campus) {
+        return universityUserRepository.existsByUserAndUniversityAndCampus(user, university, campus);
     }
 }

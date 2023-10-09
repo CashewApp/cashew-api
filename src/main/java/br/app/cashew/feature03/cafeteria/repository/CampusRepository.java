@@ -7,11 +7,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface CampusRepository extends JpaRepository<Campus, Integer> {
 
     List<Campus> findByUniversity(University university);
+
+    Optional<Campus> findByPublicKey(UUID publicKey);
 
     boolean existsByNameAndUniversity(String name, University university);
 

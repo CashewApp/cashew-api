@@ -34,3 +34,7 @@ public class CafeteriaController {
         return new ResponseEntity<>(cafeteria, HttpStatus.OK);
     }
 }
+/*
+TODO utilizar de JsonViews para evitar o envio desnecessario:
+  - do CNPJ da lanchonete
+ */

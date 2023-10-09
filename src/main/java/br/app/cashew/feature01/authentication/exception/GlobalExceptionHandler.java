@@ -5,15 +5,18 @@ import br.app.cashew.feature01.authentication.exception.email.EmailNotFoundExcep
 import br.app.cashew.feature01.authentication.exception.fingerprint.FingerprintDoesNotExists;
 import br.app.cashew.feature01.authentication.exception.user.UserCouldNotBeFoundException;
 import br.app.cashew.feature01.authentication.exception.user.UserDoesNotExistsException;
+import br.app.cashew.feature02.user.exception.CpfException;
 import br.app.cashew.feature02.user.exception.EmailChangeRequestException;
+import br.app.cashew.feature02.user.exception.universityuser.MaxQuantityOfUniversityAndCampusPreferencesReached;
+import br.app.cashew.feature02.user.exception.universityuser.UniversityAndCampusNotRelatedException;
+import br.app.cashew.feature02.user.exception.universityuser.UniversityAndCampusPreferenceAlreadyExists;
 import br.app.cashew.feature03.cafeteria.exception.CafeteriaDoesNotExistException;
 import br.app.cashew.feature03.cafeteria.exception.campus.CampusAlreadyExistsException;
 import br.app.cashew.feature03.cafeteria.exception.campus.CampusDoesNotExistsException;
 import br.app.cashew.feature03.cafeteria.exception.university.UniversityAlreadyExistsException;
+import br.app.cashew.feature03.cafeteria.exception.university.UniversityDoesNotExistsException;
 import br.app.cashew.feature03.cafeteria.exception.university.cnpj.CnpjAlreadyExistsException;
 import br.app.cashew.feature03.cafeteria.exception.university.cnpj.CnpjInvalidException;
-import br.app.cashew.feature03.cafeteria.exception.university.UniversityDoesNotExistsException;
-import br.app.cashew.feature02.user.exception.CpfException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,7 +26,10 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -101,12 +107,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UserCouldNotBeFoundException.class)
-    public ResponseEntity<Map<String, List<String>>> handleUserCouldNotBeFoundException(UserCouldNotBeFoundException ex) {
+    @ExceptionHandler({UserCouldNotBeFoundException.class, MaxQuantityOfUniversityAndCampusPreferencesReached.class, UniversityAndCampusNotRelatedException.class})
+    public ResponseEntity<Map<String, List<String>>> handleBadRequestExceptions(RuntimeException ex) {
 
         Map<String, List<String>> response = Collections.singletonMap(ERROR_KEY, Collections.singletonList(ex.getMessage()));
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        // TODO refatorar nome de metodos @ExceptionHandlers
     }
 
     @ExceptionHandler(PasswordChangeRequestException.class)
@@ -156,9 +163,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CampusAlreadyExistsException.class)
-    public ResponseEntity<Map<String, List<String>>> handleCampusAlreadyExists(CampusAlreadyExistsException ex) {
+    public ResponseEntity<Map<String, Map<String, String>>> handleCampusAlreadyExists(CampusAlreadyExistsException ex) {
 
-        Map<String, List<String>> response = Collections.singletonMap(ERROR_KEY, Collections.singletonList(ex.getMessage()));
+        Map<String, Map<String, String>> response = Collections.singletonMap(ERROR_KEY, Collections.singletonMap(ex.getMessage(), ex.getField()));
 
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
@@ -177,6 +184,22 @@ public class GlobalExceptionHandler {
         Map<String, List<String>> response = Collections.singletonMap(ERROR_KEY, Collections.singletonList(ex.getMessage()));
 
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Map<String, String>>> handleIllegalArgumentException(IllegalArgumentException ex) {
+
+        Map<String, Map<String, String>> response = Collections.singletonMap(ERROR_KEY, Collections.singletonMap("publicKey",ex.getMessage()));
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UniversityAndCampusPreferenceAlreadyExists.class)
+    public ResponseEntity<Map<String, List<String>>> handleUniversityAndCampusPreferenceAlreadyExists(UniversityAndCampusPreferenceAlreadyExists ex) {
+
+        Map<String, List<String>> response = Collections.singletonMap(ERROR_KEY, Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        // TODO refatorar nome de metodos @ExceptionHandlers
     }
 }
 // TODO refatorar e ver se cada excecao esta sendo retornada com um HttpStatus semantico
