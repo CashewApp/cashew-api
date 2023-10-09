@@ -1,5 +1,7 @@
-package br.app.cashew.feature01.authentication.exception;
+package br.app.cashew.global.exception;
 
+import br.app.cashew.feature01.authentication.exception.PasswordChangeRequestException;
+import br.app.cashew.feature01.authentication.exception.RefreshTokenIsInvalidException;
 import br.app.cashew.feature01.authentication.exception.email.EmailAlreadyExistsException;
 import br.app.cashew.feature01.authentication.exception.email.EmailNotFoundException;
 import br.app.cashew.feature01.authentication.exception.fingerprint.FingerprintDoesNotExists;
@@ -113,7 +115,6 @@ public class GlobalExceptionHandler {
         Map<String, List<String>> response = Collections.singletonMap(ERROR_KEY, Collections.singletonList(ex.getMessage()));
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        // TODO refatorar nome de metodos @ExceptionHandlers
     }
 
     @ExceptionHandler(PasswordChangeRequestException.class)
