@@ -56,7 +56,7 @@ public class User {
 
     @JsonIgnore
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "removeDate", nullable = true)
+    @Column(name = "removeDate")
     private Calendar removeDate;
 
     @JsonIgnore
