@@ -1,4 +1,4 @@
-package br.app.cashew.feature02.user.dto.user;
+package br.app.cashew.feature02.user.dto.user.input;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
