@@ -1,6 +1,6 @@
 package br.app.cashew.feature03.cafeteria.controller;
 
-import br.app.cashew.feature03.cafeteria.dto.CampusUserRegistrationDto;
+import br.app.cashew.feature03.cafeteria.dto.campus.output.CampusUserRegistrationDto;
 import br.app.cashew.feature03.cafeteria.model.Campus;
 import br.app.cashew.feature03.cafeteria.model.University;
 import br.app.cashew.feature03.cafeteria.service.UniversityService;

@@ -10,34 +10,35 @@ import br.app.cashew.feature03.cafeteria.exception.university.cnpj.CnpjAlreadyEx
 import br.app.cashew.feature03.cafeteria.exception.university.cnpj.CnpjInvalidException;
 import br.app.cashew.feature03.cafeteria.model.Cafeteria;
 import br.app.cashew.feature03.cafeteria.model.Campus;
+import br.app.cashew.feature03.cafeteria.model.product.Product;
+import br.app.cashew.feature03.cafeteria.model.product.ProductStatus;
 import br.app.cashew.feature03.cafeteria.repository.CafeteriaRepository;
 import br.app.cashew.feature03.cafeteria.repository.CampusRepository;
-import br.app.cashew.feature03.cafeteria.repository.UniversityRepository;
+import br.app.cashew.feature03.cafeteria.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.InputMismatchException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
 
 @Service
 public class CafeteriaService {
 
     private final CafeteriaRepository cafeteriaRepository;
     private final PartnerRepository partnerRepository;
-    private final UniversityRepository universityRepository;
     private final CampusRepository campusRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
     public CafeteriaService(
             CafeteriaRepository cafeteriaRepository,
             PartnerRepository partnerRepository,
-            UniversityRepository universityRepository,
-            CampusRepository campusRepository) {
+            CampusRepository campusRepository,
+            ProductRepository productRepository) {
         this.cafeteriaRepository = cafeteriaRepository;
         this.partnerRepository = partnerRepository;
-        this.universityRepository = universityRepository;
         this.campusRepository = campusRepository;
+        this.productRepository = productRepository;
     }
     public Cafeteria createCafeteria(Cafeteria cafeteria, String partnerPublicKey) {
         validateCnpj(cafeteria.getCnpj());
@@ -140,5 +141,23 @@ public class CafeteriaService {
         Optional<Campus> campus = campusRepository.findById(campusID);
 
         return campus.isPresent();
+    }
+
+    public List<Product> getProductsFromCafeteria(UUID cafeteriaUuid, ProductStatus status) {
+        Cafeteria cafeteria = cafeteriaRepository.findByPublicKey(cafeteriaUuid)
+                .orElseThrow(() -> new CafeteriaDoesNotExistException("Lanchonete nao existe"));
+
+        Function<Cafeteria, List<Product>> repositoryMethod = selectMethodForStatus(status);
+        return repositoryMethod.apply(cafeteria);
+    }
+
+    private Function<Cafeteria, List<Product>> selectMethodForStatus(ProductStatus status) {
+        EnumMap<ProductStatus, Function<Cafeteria, List<Product>>> statusToFunction = new EnumMap<>(ProductStatus.class);
+
+        statusToFunction.put(ProductStatus.ALL, productRepository::findByCafeteria);
+        statusToFunction.put(ProductStatus.ACTIVE, productRepository::findByCafeteriaAndStatusTrue);
+        statusToFunction.put(ProductStatus.INACTIVE, productRepository::findByCafeteriaAndStatusFalse);
+
+        return statusToFunction.get(status);
     }
 }

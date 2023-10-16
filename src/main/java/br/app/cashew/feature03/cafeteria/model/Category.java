@@ -18,9 +18,16 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name =  "categoryID")
     private int categoryID;
-    
+
     @NotEmpty
     @Size(max = 40)
     @Column(name = "name", nullable = false)
-    private String name; 
+    private String name;
+
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(
+            name = "cafeteriaID",
+            referencedColumnName = "cafeteriaID"
+    )
+    private Cafeteria cafeteria;
 }

@@ -1,6 +1,10 @@
-package br.app.cashew.feature03.cafeteria.model;
+package br.app.cashew.feature03.cafeteria.model.product;
 
 
+import br.app.cashew.feature03.cafeteria.model.Cafeteria;
+import br.app.cashew.feature03.cafeteria.model.Category;
+import br.app.cashew.feature03.cafeteria.model.Ingredient;
+import br.app.cashew.feature03.cafeteria.model.Stock;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "product")
@@ -30,16 +35,17 @@ public class Product {
     @Size(max = 255)
     private String description;
 
-    // private foto foto;
+    private String photoUrl;
 
     @NotNull
-    @Column(nullable = false, name = "value")
-    private double value;
+    @Column(nullable = false, name = "price")
+    private double price;
 
     @NotNull
     @Column(name = "status", columnDefinition = "tinyint(1) default 0", nullable = false)
     private boolean status;
 
+    private UUID publicKey;
 
     @ManyToOne(cascade =  CascadeType.ALL, optional = false)
     @JoinColumn(name = "cafeteriaID", nullable = false)
@@ -53,12 +59,12 @@ public class Product {
             updatable = false)
     private Stock stock;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "categoryID", referencedColumnName = "categoryID")
     private Category category;
 
 
-    @ManyToMany()
+    @ManyToMany
     @JoinTable(
             name = "product_ingredient",
             joinColumns = @JoinColumn(name = "productID", referencedColumnName = "productID"),
@@ -66,4 +72,5 @@ public class Product {
     )
     private List<Ingredient> ingredients;
 }
-// TODO no futuro modificar a entidade produto de maneira a permitir a emissão de promoções
+// TODO no futuro modificar a "produto" de maneira a permitir a emissão de promoções
+// TODO no futuro modificar "produto" de maneira a permitir que um produto tenha varios tipos/sabores/opcoes

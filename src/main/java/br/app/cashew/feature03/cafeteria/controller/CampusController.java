@@ -1,11 +1,15 @@
 package br.app.cashew.feature03.cafeteria.controller;
 
+import br.app.cashew.feature03.cafeteria.model.Cafeteria;
 import br.app.cashew.feature03.cafeteria.model.Campus;
 import br.app.cashew.feature03.cafeteria.service.CampusService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/campuses")
@@ -26,8 +30,11 @@ public class CampusController {
         return new ResponseEntity<>(campusService.createCampusById(campus), HttpStatus.CREATED);
     }
 
-    /*@GetMapping
-    public ResponseEntity<Campus> getCampus(@RequestParam String name, String universityPublicKey) {
-        return new ResponseEntity<>(campusService.getCampus(name, universityPublicKey), HttpStatus.OK);
-    }*/
+    @GetMapping("/{campusPublicKey}/cafeterias")
+    public ResponseEntity<List<Cafeteria>> getCafeteriasFromCampus(@PathVariable String campusPublicKey) {
+
+        UUID campusUuid = UUID.fromString(campusPublicKey);
+        campusService.getCafeteriasFromCampus(campusUuid);
+        return new ResponseEntity<>(campusService.getCafeteriasFromCampus(campusUuid), HttpStatus.OK);
+    }
 }

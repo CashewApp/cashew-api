@@ -2,6 +2,7 @@ package br.app.cashew.feature03.cafeteria.service;
 
 import br.app.cashew.feature03.cafeteria.exception.campus.CampusAlreadyExistsException;
 import br.app.cashew.feature03.cafeteria.exception.university.UniversityDoesNotExistsException;
+import br.app.cashew.feature03.cafeteria.model.Cafeteria;
 import br.app.cashew.feature03.cafeteria.model.Campus;
 import br.app.cashew.feature03.cafeteria.model.University;
 import br.app.cashew.feature03.cafeteria.repository.CampusRepository;
@@ -9,6 +10,7 @@ import br.app.cashew.feature03.cafeteria.repository.UniversityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -62,13 +64,7 @@ public class CampusService {
                 .orElseThrow(() -> new UniversityDoesNotExistsException("Universidade nao existe", "university"));
     }
 
-    /*public Campus getCampus(String name, String universityPublicKey) {
-        UUID uuid = UUID.fromString(universityPublicKey);
-
-        University university = universityRepository.findByUniversityPublicKey(uuid)
-                .orElseThrow(() -> new UniversityDoesNotExistsException("Universidade nao existe", "university"));
-
-       return campusRepository.findByNameAndUniversity(name, university)
-               .orElseThrow(() -> new CampusDoesNotExistsException("Campus nao existe", "campus"));
-    }*/
+    public List<Cafeteria> getCafeteriasFromCampus(UUID campusPublicKey) {
+        return campusRepository.findCafeteriasByPublicKey(campusPublicKey);
+    }
 }
