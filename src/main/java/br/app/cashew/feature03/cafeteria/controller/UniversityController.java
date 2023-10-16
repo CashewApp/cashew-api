@@ -61,7 +61,7 @@ public class UniversityController {
     // cadastro dono
     @PostMapping()
     public ResponseEntity<University> createUniversity(@RequestBody @Valid University university) {
-        return new ResponseEntity(universityService.createUniversity(university), HttpStatus.CREATED);
+        return new ResponseEntity<>(universityService.createUniversity(university), HttpStatus.CREATED);
     }
 
     // cadastro usuario
