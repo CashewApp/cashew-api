@@ -10,10 +10,12 @@ import br.app.cashew.feature03.cafeteria.exception.university.cnpj.CnpjAlreadyEx
 import br.app.cashew.feature03.cafeteria.exception.university.cnpj.CnpjInvalidException;
 import br.app.cashew.feature03.cafeteria.model.Cafeteria;
 import br.app.cashew.feature03.cafeteria.model.Campus;
+import br.app.cashew.feature03.cafeteria.model.Category;
 import br.app.cashew.feature03.cafeteria.model.product.Product;
 import br.app.cashew.feature03.cafeteria.model.product.ProductStatus;
 import br.app.cashew.feature03.cafeteria.repository.CafeteriaRepository;
 import br.app.cashew.feature03.cafeteria.repository.CampusRepository;
+import br.app.cashew.feature03.cafeteria.repository.CategoryRepository;
 import br.app.cashew.feature03.cafeteria.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,17 +30,20 @@ public class CafeteriaService {
     private final PartnerRepository partnerRepository;
     private final CampusRepository campusRepository;
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
     public CafeteriaService(
             CafeteriaRepository cafeteriaRepository,
             PartnerRepository partnerRepository,
             CampusRepository campusRepository,
-            ProductRepository productRepository) {
+            ProductRepository productRepository,
+            CategoryRepository categoryRepository) {
         this.cafeteriaRepository = cafeteriaRepository;
         this.partnerRepository = partnerRepository;
         this.campusRepository = campusRepository;
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
     }
     public Cafeteria createCafeteria(Cafeteria cafeteria, String partnerPublicKey) {
         validateCnpj(cafeteria.getCnpj());
@@ -149,6 +154,13 @@ public class CafeteriaService {
 
         Function<Cafeteria, List<Product>> repositoryMethod = selectMethodForStatus(status);
         return repositoryMethod.apply(cafeteria);
+    }
+
+    public List<Category> getCategoriesFromCafeteria(UUID cafeteriaUuid) {
+        Cafeteria cafeteria = cafeteriaRepository.findByPublicKey(cafeteriaUuid)
+                .orElseThrow(() -> new CafeteriaDoesNotExistException("Lanchonete nao existe"));
+
+        return categoryRepository.findByCafeteria(cafeteria);
     }
 
     private Function<Cafeteria, List<Product>> selectMethodForStatus(ProductStatus status) {

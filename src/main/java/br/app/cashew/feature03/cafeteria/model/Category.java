@@ -1,6 +1,7 @@
 package br.app.cashew.feature03.cafeteria.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -24,6 +25,7 @@ public class Category {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(
             name = "cafeteriaID",
