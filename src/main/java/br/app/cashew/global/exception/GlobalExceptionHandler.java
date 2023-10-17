@@ -12,7 +12,7 @@ import br.app.cashew.feature02.user.exception.EmailChangeRequestException;
 import br.app.cashew.feature02.user.exception.universityuser.MaxQuantityOfUniversityAndCampusPreferencesReached;
 import br.app.cashew.feature02.user.exception.universityuser.UniversityAndCampusNotRelatedException;
 import br.app.cashew.feature02.user.exception.universityuser.UniversityAndCampusPreferenceAlreadyExists;
-import br.app.cashew.feature03.cafeteria.exception.CafeteriaDoesNotExistException;
+import br.app.cashew.feature03.cafeteria.exception.CafeteriaDoesNotExistsException;
 import br.app.cashew.feature03.cafeteria.exception.campus.CampusAlreadyExistsException;
 import br.app.cashew.feature03.cafeteria.exception.campus.CampusDoesNotExistsException;
 import br.app.cashew.feature03.cafeteria.exception.university.UniversityAlreadyExistsException;
@@ -155,8 +155,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @ExceptionHandler(CafeteriaDoesNotExistException.class)
-    public ResponseEntity<Map<String, List<String>>> handleCafeteriaDoesNotExistException(CafeteriaDoesNotExistException ex) {
+    @ExceptionHandler(CafeteriaDoesNotExistsException.class)
+    public ResponseEntity<Map<String, List<String>>> handleCafeteriaDoesNotExistException(CafeteriaDoesNotExistsException ex) {
 
         Map<String, List<String>> response = Collections.singletonMap(ERROR_KEY, Collections.singletonList(ex.getMessage()));
 

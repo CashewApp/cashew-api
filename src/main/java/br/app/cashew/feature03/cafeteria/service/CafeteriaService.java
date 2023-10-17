@@ -4,7 +4,7 @@ import br.app.cashew.feature01.authentication.exception.user.UserDoesNotExistsEx
 import br.app.cashew.feature01.authentication.model.partner.Owner;
 import br.app.cashew.feature01.authentication.model.partner.Partner;
 import br.app.cashew.feature01.authentication.repository.PartnerRepository;
-import br.app.cashew.feature03.cafeteria.exception.CafeteriaDoesNotExistException;
+import br.app.cashew.feature03.cafeteria.exception.CafeteriaDoesNotExistsException;
 import br.app.cashew.feature03.cafeteria.exception.campus.CampusDoesNotExistsException;
 import br.app.cashew.feature03.cafeteria.exception.university.cnpj.CnpjAlreadyExistsException;
 import br.app.cashew.feature03.cafeteria.exception.university.cnpj.CnpjInvalidException;
@@ -62,7 +62,7 @@ public class CafeteriaService {
         UUID uuid = UUID.fromString(cafeteriaPublicKey);
 
         return cafeteriaRepository.findByPublicKey(uuid)
-                .orElseThrow(() -> new CafeteriaDoesNotExistException("Cafeteria nao existe"));
+                .orElseThrow(() -> new CafeteriaDoesNotExistsException("Cafeteria nao existe"));
     }
 
     private void setOwner(Cafeteria cafeteria, String partnerPublicKey) {
@@ -150,7 +150,7 @@ public class CafeteriaService {
 
     public List<Product> getProductsFromCafeteria(UUID cafeteriaUuid, ProductStatus status) {
         Cafeteria cafeteria = cafeteriaRepository.findByPublicKey(cafeteriaUuid)
-                .orElseThrow(() -> new CafeteriaDoesNotExistException("Lanchonete nao existe"));
+                .orElseThrow(() -> new CafeteriaDoesNotExistsException("Lanchonete nao existe"));
 
         Function<Cafeteria, List<Product>> repositoryMethod = selectMethodForStatus(status);
         return repositoryMethod.apply(cafeteria);
@@ -158,7 +158,7 @@ public class CafeteriaService {
 
     public List<Category> getCategoriesFromCafeteria(UUID cafeteriaUuid) {
         Cafeteria cafeteria = cafeteriaRepository.findByPublicKey(cafeteriaUuid)
-                .orElseThrow(() -> new CafeteriaDoesNotExistException("Lanchonete nao existe"));
+                .orElseThrow(() -> new CafeteriaDoesNotExistsException("Lanchonete nao existe"));
 
         return categoryRepository.findByCafeteria(cafeteria);
     }
