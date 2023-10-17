@@ -14,8 +14,11 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     List<Product> findByCafeteriaAndStatusTrue(Cafeteria cafeteria);
+
     List<Product> findByCafeteriaAndStatusFalse(Cafeteria cafeteria);
+
     List<Product> findByCafeteria(Cafeteria cafeteria);
+
     Optional<Product> findByPublicKey(UUID productPublicKey);
 
     @Query("SELECT p.stock FROM Product p WHERE p.publicKey = :publicKey")
