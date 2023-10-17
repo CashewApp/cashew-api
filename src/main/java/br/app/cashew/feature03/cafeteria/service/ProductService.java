@@ -1,6 +1,7 @@
 package br.app.cashew.feature03.cafeteria.service;
 
 import br.app.cashew.feature03.cafeteria.exception.ProductDoesNotExistsException;
+import br.app.cashew.feature03.cafeteria.model.Stock;
 import br.app.cashew.feature03.cafeteria.model.product.Product;
 import br.app.cashew.feature03.cafeteria.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,5 +23,10 @@ public class ProductService {
         return productRepository.findByPublicKey(productUuid)
                 .orElseThrow(() -> new ProductDoesNotExistsException("Produto nao existe", "product"));
 
+    }
+
+    public Stock getStockFromProduct(UUID productUuid) {
+        return productRepository.findStockByPublicKey(productUuid)
+                .orElseThrow(() -> new ProductDoesNotExistsException("Produto nao existe", "product"));
     }
 }
