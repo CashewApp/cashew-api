@@ -13,6 +13,7 @@ import br.app.cashew.feature02.user.exception.universityuser.MaxQuantityOfUniver
 import br.app.cashew.feature02.user.exception.universityuser.UniversityAndCampusNotRelatedException;
 import br.app.cashew.feature02.user.exception.universityuser.UniversityAndCampusPreferenceAlreadyExists;
 import br.app.cashew.feature03.cafeteria.exception.CafeteriaDoesNotExistsException;
+import br.app.cashew.feature03.cafeteria.exception.ProductDoesNotExistsException;
 import br.app.cashew.feature03.cafeteria.exception.campus.CampusAlreadyExistsException;
 import br.app.cashew.feature03.cafeteria.exception.campus.CampusDoesNotExistsException;
 import br.app.cashew.feature03.cafeteria.exception.university.UniversityAlreadyExistsException;
@@ -166,7 +167,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CampusAlreadyExistsException.class)
     public ResponseEntity<Map<String, Map<String, String>>> handleCampusAlreadyExists(CampusAlreadyExistsException ex) {
 
-        Map<String, Map<String, String>> response = Collections.singletonMap(ERROR_KEY, Collections.singletonMap(ex.getMessage(), ex.getField()));
+        Map<String, Map<String, String>> response = Collections.singletonMap(ERROR_KEY, Collections.singletonMap(ex.getField(), ex.getMessage()));
 
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
@@ -201,6 +202,14 @@ public class GlobalExceptionHandler {
         Map<String, List<String>> response = Collections.singletonMap(ERROR_KEY, Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         // TODO refatorar nome de metodos @ExceptionHandlers
+    }
+
+    @ExceptionHandler(ProductDoesNotExistsException.class)
+    public ResponseEntity<Map<String, Map<String, String>>> handleProductDoesNotExistsException(ProductDoesNotExistsException ex) {
+
+        Map<String, Map<String, String>> response = Collections.singletonMap(ERROR_KEY, Collections.singletonMap(ex.getField(), ex.getMessage()));
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }
 // TODO refatorar e ver se cada excecao esta sendo retornada com um HttpStatus semantico

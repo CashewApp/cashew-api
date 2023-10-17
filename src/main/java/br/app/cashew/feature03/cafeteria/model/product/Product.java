@@ -5,6 +5,7 @@ import br.app.cashew.feature03.cafeteria.model.Cafeteria;
 import br.app.cashew.feature03.cafeteria.model.Category;
 import br.app.cashew.feature03.cafeteria.model.Ingredient;
 import br.app.cashew.feature03.cafeteria.model.Stock;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -51,6 +52,7 @@ public class Product {
     @JoinColumn(name = "cafeteriaID", nullable = false)
     private Cafeteria cafeteria;
 
+    @JsonManagedReference
     @OneToOne(optional = false, orphanRemoval = true)
     @JoinColumn(
             name = "stockID",
@@ -62,7 +64,6 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "categoryID", referencedColumnName = "categoryID")
     private Category category;
-
 
     @ManyToMany
     @JoinTable(

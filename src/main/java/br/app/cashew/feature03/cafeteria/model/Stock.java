@@ -1,6 +1,7 @@
 package br.app.cashew.feature03.cafeteria.model;
 
 import br.app.cashew.feature03.cafeteria.model.product.Product;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
@@ -37,6 +38,7 @@ public class Stock {
     @Column(name = "orderedQuantity", nullable = false, columnDefinition = "int DEFAULT 0")
     private int orderedQuantity;
 
+    @JsonBackReference
     @OneToOne(mappedBy = "stock")
     private Product product;
 }
