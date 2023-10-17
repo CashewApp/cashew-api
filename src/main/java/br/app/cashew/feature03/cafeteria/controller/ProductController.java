@@ -1,6 +1,8 @@
 package br.app.cashew.feature03.cafeteria.controller;
 
+import br.app.cashew.feature03.cafeteria.dto.cafeteria.output.CafeteriaDto;
 import br.app.cashew.feature03.cafeteria.dto.stock.output.StockDto;
+import br.app.cashew.feature03.cafeteria.model.Cafeteria;
 import br.app.cashew.feature03.cafeteria.model.Stock;
 import br.app.cashew.feature03.cafeteria.model.product.Product;
 import br.app.cashew.feature03.cafeteria.service.ProductService;
@@ -41,7 +43,20 @@ public class ProductController {
         return new ResponseEntity<>(stock, HttpStatus.OK);
     }
 
+    @GetMapping("/{productPublicKey}/cafeteria-summary")
+    public ResponseEntity<CafeteriaDto> getCafeteriaFromProduct(@PathVariable String productPublicKey) {
+        UUID productUuid = UUID.fromString(productPublicKey);
+        Cafeteria cafeteria = productService.getCafeteriaProductBelongs(productUuid);
+        CafeteriaDto response = convertCafeteriaToCafeteriaDto(cafeteria);
+        response.setUniversity(cafeteria.getCampus().getUniversity().getName());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     private StockDto convertStockToStockDto(Stock stock) {
         return modelMapper.map(stock, StockDto.class);
+    }
+
+    private CafeteriaDto convertCafeteriaToCafeteriaDto(Cafeteria cafeteria) {
+        return modelMapper.map(cafeteria, CafeteriaDto.class);
     }
 }

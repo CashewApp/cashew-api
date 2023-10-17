@@ -20,4 +20,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("SELECT p.stock FROM Product p WHERE p.publicKey = :publicKey")
     Optional<Stock> findStockByPublicKey(@Param("publicKey") UUID productPublicKey);
+
+    @Query("SELECT p.cafeteria FROM Product p WHERE p.publicKey = :publicKey")
+    Optional<Cafeteria> findCafeteriaByPublicKey(@Param("publicKey") UUID productPublicKey);
 }

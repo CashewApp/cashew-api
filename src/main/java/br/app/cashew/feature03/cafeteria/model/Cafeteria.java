@@ -22,7 +22,7 @@ public class Cafeteria{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cafeteriaID")
-    private long cafeteriaID;
+    private int cafeteriaID;
 
     @NotBlank(message = "Nome invalido")
     @Column(name = "name", nullable = false)
@@ -39,6 +39,11 @@ public class Cafeteria{
 
     @Column(nullable = false, unique = true, name = "public_key")
     private UUID publicKey;
+
+    private String photoUrl;
+
+    @Column(name = "average_rating", columnDefinition = "int DEFAULT 0")
+    private int averageRating;
 
     @Column(name = "cnpj", unique = true, nullable = false)
     @Size(min = 14, max = 14, message = "CNPJ invalido")
