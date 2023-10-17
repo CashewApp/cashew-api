@@ -1,7 +1,9 @@
 package br.app.cashew.feature03.cafeteria.controller;
 
 import br.app.cashew.feature03.cafeteria.dto.product.output.ProductDto;
+import br.app.cashew.feature03.cafeteria.dto.stock.output.StockDto;
 import br.app.cashew.feature03.cafeteria.model.Cafeteria;
+import br.app.cashew.feature03.cafeteria.dto.ProductStockWrapper;
 import br.app.cashew.feature03.cafeteria.model.product.Product;
 import br.app.cashew.feature03.cafeteria.model.product.ProductStatus;
 import br.app.cashew.feature03.cafeteria.service.CafeteriaService;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,10 +49,13 @@ public class CafeteriaController {
     }
 
     @GetMapping("/{cafeteriaPublicKey}/products")
-    public ResponseEntity<List<ProductDto>> getProductsFromCafeteria(@PathVariable String cafeteriaPublicKey,
-                                                                     @RequestParam(required = false, defaultValue = "ACTIVE") ProductStatus status, Authentication authentication) {
+    public ResponseEntity<ProductStockWrapper> getProductsFromCafeteria(@PathVariable String cafeteriaPublicKey,
+                                                                     @RequestParam(required = false, defaultValue = "ACTIVE") ProductStatus status,
+                                                                     @RequestParam(required = false, defaultValue = "false") boolean onlyStock,
+                                                                     Authentication authentication) {
+
         UUID cafeteriaUuid = UUID.fromString(cafeteriaPublicKey);
-        List<ProductDto> products;
+        ProductStockWrapper productStockWrapper = new ProductStockWrapper();
 
         if (status == ProductStatus.INACTIVE || status == ProductStatus.ALL) {
 
@@ -60,16 +66,34 @@ public class CafeteriaController {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
 
-            products = cafeteriaService.getProductsFromCafeteria(cafeteriaUuid, status).stream()
-                    .map(this::convertProductToProductDto)
-                    .toList();
-            return new ResponseEntity<>(products, HttpStatus.OK);
+            return getProductStockWrapperResponseEntity(status, onlyStock, cafeteriaUuid, productStockWrapper);
         }
 
+        return getProductStockWrapperResponseEntity(status, onlyStock, cafeteriaUuid, productStockWrapper);
+        // TODO refatorar este metodo
+    }
+
+    private ResponseEntity<ProductStockWrapper> getProductStockWrapperResponseEntity(ProductStatus status,
+                                                                                     boolean onlyStock,
+                                                                                     UUID cafeteriaUuid,
+                                                                                     ProductStockWrapper productStockWrapper) {
+        List<ProductDto> products;
+        List<StockDto> stock = new ArrayList<>();
         products = cafeteriaService.getProductsFromCafeteria(cafeteriaUuid, status).stream()
                 .map(this::convertProductToProductDto)
                 .toList();
-        return new ResponseEntity<>(products, HttpStatus.OK);
+
+        if (onlyStock) {
+            for (ProductDto product : products) {
+
+                stock.add(product.getStock());
+            }
+            productStockWrapper.setStock(stock);
+
+            return new ResponseEntity<>(productStockWrapper, HttpStatus.OK);
+        }
+        productStockWrapper.setProducts(products);
+        return new ResponseEntity<>(productStockWrapper, HttpStatus.OK);
     }
 
     private ProductDto convertProductToProductDto(Product product) {
