@@ -34,9 +34,15 @@ public class ProductService {
                 .orElseThrow(() -> new ProductDoesNotExistsException(ERROR_MESSAGE_PRODUCT_DOES_NOT_EXISTS_EXCEPTION, ERROR_MESSAGE_FIELD));
     }
 
-    public Cafeteria getCafeteriaProductBelongs(UUID productUuid) {
+    public Cafeteria getCafeteriaFromProduct(UUID productUuid) {
 
-        return productRepository.findCafeteriaByPublicKey(productUuid)
+        return productRepository.findCafeteriaFromProductByPublicKey(productUuid)
                 .orElseThrow(() -> new ProductDoesNotExistsException(ERROR_MESSAGE_PRODUCT_DOES_NOT_EXISTS_EXCEPTION, ERROR_MESSAGE_FIELD));
+    }
+
+    public String getDescriptionFromProduct(UUID productUuid) {
+        return productRepository.findDescriptionFromProductByPublicKey(productUuid)
+                .orElseThrow(() -> new ProductDoesNotExistsException(ERROR_MESSAGE_PRODUCT_DOES_NOT_EXISTS_EXCEPTION, ERROR_MESSAGE_FIELD));
+
     }
 }

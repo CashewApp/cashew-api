@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -46,9 +48,16 @@ public class ProductController {
     @GetMapping("/{productPublicKey}/cafeteria-summary")
     public ResponseEntity<CafeteriaDto> getCafeteriaFromProduct(@PathVariable String productPublicKey) {
         UUID productUuid = UUID.fromString(productPublicKey);
-        Cafeteria cafeteria = productService.getCafeteriaProductBelongs(productUuid);
+        Cafeteria cafeteria = productService.getCafeteriaFromProduct(productUuid);
         CafeteriaDto response = convertCafeteriaToCafeteriaDto(cafeteria);
         response.setUniversity(cafeteria.getCampus().getUniversity().getName());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{productPublicKey}/description")
+    public ResponseEntity<Map<String, String>> getDescriptionFromProduct(@PathVariable String productPublicKey) {
+        UUID productUuid = UUID.fromString(productPublicKey);
+        Map<String, String> response = Collections.singletonMap("description", productService.getDescriptionFromProduct(productUuid));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
