@@ -5,7 +5,7 @@ import br.app.cashew.feature01.authentication.dto.user.UserLoginDTO;
 import br.app.cashew.feature01.authentication.model.partner.Partner;
 import br.app.cashew.feature01.authentication.service.authentication.BaseAuthenticationService;
 import br.app.cashew.feature01.authentication.service.authentication.partner.PartnerAuthenticationServiceImpl;
-import br.app.cashew.feature01.authentication.service.token.BaseOAuth2TokenService;
+import br.app.cashew.feature01.authentication.service.jwt.BaseJwtService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,7 +25,7 @@ public class PartnerAuthenticationController extends BaseAuthenticationControlle
     @Autowired
     public PartnerAuthenticationController(
             PartnerAuthenticationServiceImpl partnerAuthenticationServiceImpl,
-            @Qualifier("partnerOAuth2TokenServiceImpl") BaseOAuth2TokenService baseOAuth2TokenService) {
+            @Qualifier("partnerJwtService") BaseJwtService baseOAuth2TokenService) {
 
         super(baseOAuth2TokenService);
         this.partnerAuthenticationServiceImpl = partnerAuthenticationServiceImpl;

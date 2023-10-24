@@ -1,4 +1,4 @@
-package br.app.cashew.feature01.authentication.service.token;
+package br.app.cashew.feature01.authentication.service.jwt;
 
 import br.app.cashew.feature01.authentication.model.RefreshToken;
 import br.app.cashew.feature01.authentication.util.key.RSAKeyProperties;
@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 
 @Service
-public abstract class BaseOAuth2TokenService {
+public abstract class BaseJwtService {
 
     private final JwtEncoder jwtEncoder;
     private final RSAKeyProperties rsaKeyProperties;
 
     @Autowired
-    protected BaseOAuth2TokenService(JwtEncoder jwtEncoder, RSAKeyProperties rsaKeyProperties) {
+    protected BaseJwtService(JwtEncoder jwtEncoder, RSAKeyProperties rsaKeyProperties) {
 
         this.jwtEncoder = jwtEncoder;
         this.rsaKeyProperties = rsaKeyProperties;

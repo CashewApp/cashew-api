@@ -4,7 +4,7 @@ import br.app.cashew.feature01.authentication.dto.RefreshTokenDTO;
 import br.app.cashew.feature01.authentication.dto.user.UserLoginDTO;
 import br.app.cashew.feature01.authentication.exception.RefreshTokenIsInvalidException;
 import br.app.cashew.feature01.authentication.service.authentication.BaseAuthenticationService;
-import br.app.cashew.feature01.authentication.service.token.BaseOAuth2TokenService;
+import br.app.cashew.feature01.authentication.service.jwt.BaseJwtService;
 import br.app.cashew.feature01.authentication.util.token.TokenGeneratorUtility;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Component
 public abstract class BaseAuthenticationController<T> {
 
-    private final BaseOAuth2TokenService baseOAuth2TokenService;
+    private final BaseJwtService baseOAuth2TokenService;
     protected static final String ACCESS_TOKEN_PROPERTY_NAME = "access token";
     protected static final String REFRESH_TOKEN_PROPERTY_NAME = "refresh token";
     protected static final String USER_FINGERPRINT_PROPERTY_NAME = "userFingerprint";
@@ -31,7 +31,7 @@ public abstract class BaseAuthenticationController<T> {
     protected static final String MESSAGE_PROPERTY_NAME = "message";
 
     @Autowired
-    protected BaseAuthenticationController(BaseOAuth2TokenService baseOAuth2TokenService) {
+    protected BaseAuthenticationController(BaseJwtService baseOAuth2TokenService) {
 
         this.baseOAuth2TokenService = baseOAuth2TokenService;
     }

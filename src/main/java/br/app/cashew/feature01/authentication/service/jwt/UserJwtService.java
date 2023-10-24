@@ -1,4 +1,4 @@
-package br.app.cashew.feature01.authentication.service.token;
+package br.app.cashew.feature01.authentication.service.jwt;
 
 import br.app.cashew.feature01.authentication.exception.RefreshTokenIsInvalidException;
 import br.app.cashew.feature01.authentication.exception.user.UserDoesNotExistsException;
@@ -6,8 +6,8 @@ import br.app.cashew.feature01.authentication.model.RefreshToken;
 import br.app.cashew.feature01.authentication.model.user.User;
 import br.app.cashew.feature01.authentication.repository.RefreshTokenRepository;
 import br.app.cashew.feature01.authentication.repository.UserRepository;
-import br.app.cashew.feature01.authentication.service.jwt.JwtRefreshTokenJtiValidator;
-import br.app.cashew.feature01.authentication.service.jwt.JwtUserSubjectValidator;
+import br.app.cashew.feature01.authentication.service.jwt.validators.JwtRefreshTokenJtiValidator;
+import br.app.cashew.feature01.authentication.service.jwt.validators.JwtUserSubjectValidator;
 import br.app.cashew.feature01.authentication.util.key.RSAKeyProperties;
 import br.app.cashew.feature01.authentication.util.token.RefreshTokenPropertiesUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +26,17 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-@Service("userOAuth2TokenServiceImpl")
-public class UserOAuth2TokenServiceImpl extends BaseOAuth2TokenService{
+@Service("userJwtService")
+public class UserJwtService extends BaseJwtService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
 
     @Autowired
-    public UserOAuth2TokenServiceImpl(JwtEncoder jwtEncoder,
-                                      RSAKeyProperties rsaKeyProperties,
-                                      RefreshTokenRepository refreshTokenRepository,
-                                      UserRepository userRepository) {
+    public UserJwtService(JwtEncoder jwtEncoder,
+                          RSAKeyProperties rsaKeyProperties,
+                          RefreshTokenRepository refreshTokenRepository,
+                          UserRepository userRepository) {
         super(jwtEncoder, rsaKeyProperties);
         this.refreshTokenRepository = refreshTokenRepository;
         this.userRepository = userRepository;

@@ -1,4 +1,4 @@
-package br.app.cashew.feature01.authentication.service.token;
+package br.app.cashew.feature01.authentication.service.jwt;
 
 import br.app.cashew.feature01.authentication.exception.RefreshTokenIsInvalidException;
 import br.app.cashew.feature01.authentication.exception.user.UserDoesNotExistsException;
@@ -6,8 +6,8 @@ import br.app.cashew.feature01.authentication.model.RefreshToken;
 import br.app.cashew.feature01.authentication.model.partner.Partner;
 import br.app.cashew.feature01.authentication.repository.PartnerRepository;
 import br.app.cashew.feature01.authentication.repository.RefreshTokenRepository;
-import br.app.cashew.feature01.authentication.service.jwt.JwtPartnerSubjectValidator;
-import br.app.cashew.feature01.authentication.service.jwt.JwtRefreshTokenJtiValidator;
+import br.app.cashew.feature01.authentication.service.jwt.validators.JwtPartnerSubjectValidator;
+import br.app.cashew.feature01.authentication.service.jwt.validators.JwtRefreshTokenJtiValidator;
 import br.app.cashew.feature01.authentication.util.key.RSAKeyProperties;
 import br.app.cashew.feature01.authentication.util.token.RefreshTokenPropertiesUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +26,17 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-@Service("partnerOAuth2TokenServiceImpl")
-public class PartnerOAuth2TokenServiceImpl extends BaseOAuth2TokenService{
+@Service("partnerJwtService")
+public class PartnerJwtService extends BaseJwtService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final PartnerRepository partnerRepository;
 
     @Autowired
-    public PartnerOAuth2TokenServiceImpl(JwtEncoder jwtEncoder,
-                                         RSAKeyProperties rsaKeyProperties,
-                                         RefreshTokenRepository refreshTokenRepository,
-                                         PartnerRepository partnerRepository) {
+    public PartnerJwtService(JwtEncoder jwtEncoder,
+                             RSAKeyProperties rsaKeyProperties,
+                             RefreshTokenRepository refreshTokenRepository,
+                             PartnerRepository partnerRepository) {
         super(jwtEncoder, rsaKeyProperties);
         this.refreshTokenRepository = refreshTokenRepository;
         this.partnerRepository = partnerRepository;

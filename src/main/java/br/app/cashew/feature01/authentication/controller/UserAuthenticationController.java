@@ -11,7 +11,7 @@ import br.app.cashew.feature01.authentication.model.user.User;
 import br.app.cashew.feature01.authentication.service.authentication.BaseAuthenticationService;
 import br.app.cashew.feature01.authentication.service.authentication.user.UserAuthenticationServiceImpl;
 import br.app.cashew.feature01.authentication.service.authentication.user.UserPasswordService;
-import br.app.cashew.feature01.authentication.service.token.BaseOAuth2TokenService;
+import br.app.cashew.feature01.authentication.service.jwt.BaseJwtService;
 import br.app.cashew.feature01.authentication.util.token.TokenGeneratorUtility;
 import br.app.cashew.feature02.user.service.email.EmailService;
 import jakarta.validation.Valid;
@@ -37,7 +37,7 @@ public class UserAuthenticationController extends BaseAuthenticationController<U
     @Autowired
     public UserAuthenticationController(
             UserAuthenticationServiceImpl userAuthenticationServiceImpl,
-            @Qualifier("userOAuth2TokenServiceImpl") BaseOAuth2TokenService baseOAuth2TokenService,
+            @Qualifier("userJwtService") BaseJwtService baseOAuth2TokenService,
             EmailService emailService,
             UserPasswordService userPasswordService) {
 
