@@ -1,4 +1,4 @@
-package br.app.cashew.feature01.authentication.service.jwt;
+package br.app.cashew.feature01.authentication.service.jwt.validators;
 
 import br.app.cashew.feature01.authentication.util.token.TokenGeneratorUtility;
 import org.springframework.security.oauth2.core.OAuth2Error;

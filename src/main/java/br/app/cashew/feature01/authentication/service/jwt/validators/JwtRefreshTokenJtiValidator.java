@@ -1,4 +1,4 @@
-package br.app.cashew.feature01.authentication.service.jwt;
+package br.app.cashew.feature01.authentication.service.jwt.validators;
 
 import br.app.cashew.feature01.authentication.repository.RefreshTokenRepository;
 import lombok.NoArgsConstructor;
