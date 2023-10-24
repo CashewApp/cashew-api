@@ -14,13 +14,6 @@ public class TokenGeneratorUtility {
         throw new IllegalStateException("Utility class can't be instantiated");
     }
 
-    /*
-    * - fingerprint
-    * - fingerprint hashed
-    * - generateFingerPrint()
-    * */
-
-
     public static String generateToken() {
 
         // Random data generator
