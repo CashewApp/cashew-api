@@ -79,8 +79,10 @@ visando aprimorar o relacionamento do cliente com o estabelecimento.
   - Lombok
   - Spring Boot Starter Test
   - Hibernate Validator
+  - Spring Cloud AWS
 - ### MariaDB
 - ### Postman
+- AWS SDK v2 Java
 
 ## Como Instalar e Executar a API
 
@@ -88,7 +90,7 @@ visando aprimorar o relacionamento do cliente com o estabelecimento.
 
 - [JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 - [MariaDB Server](https://mariadb.org/download/?t=mariadb)
-- [Maven](https://maven.apache.org/download.cgi) (opcional)
+- [Maven](https://maven.apache.org/download.cgi)
 - IDE (VSCode, IntelliJ, Eclipse)
 
 ### Download
@@ -96,31 +98,23 @@ visando aprimorar o relacionamento do cliente com o estabelecimento.
 - Baixe o projeto
 
 
-    git clone https://github.com/CashewApp/cashew-backend.git
+    ```git clone https://github.com/CashewApp/cashew-backend.git```
 
 ### Executar
 
 - No windows
     
     
-    mvnw spring-boot:run
+    ```mvnw spring-boot:run```
 
 - No linux
 
 
-    ./mvnw spring-boot:run
+   ``` ./mvnw spring-boot:run```
 
 
 ## Como Usar a API
 
 A API está configurada na porta 8080 com o prefixo /api/v1
 
-Você pode ver todos os endpoints aqui: [docs](https://cashew.postman.co)
-
-
-
-
-
-
-
-
+Você pode ver todos os endpoints aqui: [docs](https://documenter.getpostman.com/view/26485477/2s9YXbAmP2)
