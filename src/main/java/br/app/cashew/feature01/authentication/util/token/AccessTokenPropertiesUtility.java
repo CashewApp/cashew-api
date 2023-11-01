@@ -3,9 +3,9 @@ package br.app.cashew.feature01.authentication.util.token;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class AccessTokenPropertiesUtility {
@@ -15,16 +15,18 @@ public class AccessTokenPropertiesUtility {
     private static final String ROLES_CLAIM_NAME = "roles";
     private static final String FINGERPRINT_CLAIM_NAME = "userFingerprint";
     private static final String ISSUER = "cashew-api";
-    private static final List<String> AUDIENCES = new ArrayList<>(List.of("cashew-api"));
+    private static final List<String> AUDIENCES = new ArrayList<>(List.of(ISSUER));
 
-    public static Instant getCurrentTime() {
+    public static Date getCurrentTime() {
 
-        return Instant.now();
+        return Calendar.getInstance().getTime();
     }
 
-    public static Instant getExpirationTime(Instant curretTime) {
-
-        return curretTime.plus(15, ChronoUnit.MINUTES);
+    public static Date getExpirationTime(Date currentTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentTime);
+        calendar.add(Calendar.MINUTE, 15);
+        return calendar.getTime();
     }
 
     public static List<String> getAudiences() {

@@ -1,17 +1,10 @@
 package br.app.cashew.feature01.authentication.config;
 
 import br.app.cashew.feature01.authentication.service.authentication.CustomUserDetailsService;
-import br.app.cashew.feature01.authentication.service.jwt.JwtAccessTokenJtiValidator;
-import br.app.cashew.feature01.authentication.service.jwt.JwtAlgorithmValidator;
-import br.app.cashew.feature01.authentication.util.key.RSAKeyProperties;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
+import br.app.cashew.feature01.authentication.service.jwt.validators.JwtAccessTokenJtiValidator;
+import br.app.cashew.feature01.authentication.service.jwt.validators.JwtAlgorithmValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,7 +24,13 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.List;
 
 import static org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames.AUD;
@@ -40,16 +39,16 @@ import static org.springframework.security.oauth2.core.OAuth2TokenIntrospectionC
 @EnableAsync
 public class SecurityConfig {
 
+    @Value("${.kms.publickey}")
+    private String publickey;
     private static final String ROLE_OWNER = "ROLE_OWNER";
     private static final String ROLE_USER = "ROLE_USER";
-    private final RSAKeyProperties keys;
     private final CustomUserDetailsService customUserDetailsService;
 
     @Autowired
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService, RSAKeyProperties rsaKeyProperties) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
 
         this.customUserDetailsService = customUserDetailsService;
-        this.keys = rsaKeyProperties;
     }
 
     @Bean
@@ -96,10 +95,14 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder() {
 
-        NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder
-                .withPublicKey(keys.getPublicKey())
-                .build();
-
+        NimbusJwtDecoder nimbusJwtDecoder;
+        try {
+            nimbusJwtDecoder = NimbusJwtDecoder
+                    .withPublicKey(getRSAPublicKeyFromPEM())
+                    .build();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
 
         OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(
                 new JwtTimestampValidator(Duration.ofSeconds(20)), // valida claims exp e nbf
@@ -124,23 +127,14 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 
-    @Bean
-    public JwtEncoder jwtEncoder() {
-        JWK jwk = new RSAKey
-                .Builder(keys.getPublicKey())
-                .algorithm(JWSAlgorithm.RS256)
-                .privateKey(keys.getPrivateKey())
-                .build();
-        JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(jwk));
+    private RSAPublicKey getRSAPublicKeyFromPEM() throws NoSuchAlgorithmException, InvalidKeySpecException {
 
-        return new NimbusJwtEncoder(jwkSource);
-    }
-
-    @Bean
-    public RSAKeyProperties rsaKeyProperties(RSAKeyProperties rsaKeyProperties) {
-        rsaKeyProperties.setPublicKey(keys.getPublicKey());
-        rsaKeyProperties.setPrivateKey(keys.getPrivateKey());
-        return rsaKeyProperties;
+        publickey = publickey.replace("-----BEGIN PUBLIC KEY-----\n", "");
+        publickey = publickey.replace("-----END PUBLIC KEY-----", "");
+        publickey = publickey.replaceAll("\\s", "");
+        X509EncodedKeySpec  keySpec = new X509EncodedKeySpec(Base64.getDecoder().decode(publickey));
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return (RSAPublicKey) keyFactory.generatePublic(keySpec);
     }
 }
 // TODO adicionar validacao de sub no JwtDecoder

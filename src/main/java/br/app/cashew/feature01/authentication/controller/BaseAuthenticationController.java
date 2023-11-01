@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public abstract class BaseAuthenticationController<T> {
         this.baseOAuth2TokenService = baseOAuth2TokenService;
     }
 
-    public ResponseEntity<Map<String, Object>> registrate(@RequestBody @Valid T userRegistrationDTO) {
+    public ResponseEntity<Map<String, Object>> registrate(@RequestBody @Valid T userRegistrationDTO) throws IOException {
 
         BaseAuthenticationService<T> authenticationService = getAuthenticationService();
 
@@ -52,7 +53,7 @@ public abstract class BaseAuthenticationController<T> {
     }
 
 
-    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
+    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody UserLoginDTO userLoginDTO) throws IOException {
 
         BaseAuthenticationService<T> authenticationService = getAuthenticationService();
 
@@ -70,7 +71,7 @@ public abstract class BaseAuthenticationController<T> {
 
     public abstract BaseAuthenticationService<T> getAuthenticationService();
 
-    public ResponseEntity<Map<String, Object>> getNewRefreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+    public ResponseEntity<Map<String, Object>> getNewRefreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) throws IOException {
 
         Jwt refreshToken = baseOAuth2TokenService.extractRefreshToken(refreshTokenDTO.getRefresh_token());
 

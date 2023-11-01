@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -48,19 +49,19 @@ public class UserAuthenticationController extends BaseAuthenticationController<U
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<Map<String, Object>> registrateUser(@RequestBody @Valid UserRegistrationDTO userRegistrationDTO) {
+    public ResponseEntity<Map<String, Object>> registrateUser(@RequestBody @Valid UserRegistrationDTO userRegistrationDTO) throws IOException {
 
         return super.registrate(userRegistrationDTO);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> loginUser(@Valid @RequestBody UserLoginDTO userLoginDTO) {
+    public ResponseEntity<Map<String, Object>> loginUser(@Valid @RequestBody UserLoginDTO userLoginDTO) throws IOException {
 
         return super.login(userLoginDTO);
     }
 
     @PostMapping("/token")
-    public ResponseEntity<Map<String, Object>> getNewUserRefreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+    public ResponseEntity<Map<String, Object>> getNewUserRefreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) throws IOException {
 
         return super.getNewRefreshToken(refreshTokenDTO);
     }
@@ -125,5 +126,4 @@ public class UserAuthenticationController extends BaseAuthenticationController<U
         return userAuthenticationServiceImpl;
     }
 }
-// TODO adicionar armazenamento das chaves criptograficas a serem feitas pelo AWS kms
 // TODO adicionar confirmacao de e-mail durante a criacao da conta

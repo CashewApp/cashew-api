@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -33,13 +34,13 @@ public class PartnerAuthenticationController extends BaseAuthenticationControlle
 
     // metodo para cadastrar
     @PostMapping("/registration")
-    public ResponseEntity<Map<String, Object>> registratePartner(@RequestBody @Valid Partner partner /*, DadosBancarios dadosBancarios*/) {
+    public ResponseEntity<Map<String, Object>> registratePartner(@RequestBody @Valid Partner partner /*, DadosBancarios dadosBancarios*/) throws IOException {
 
         return super.registrate(partner);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> loginPartner(@RequestBody @Valid UserLoginDTO userLoginDTO) {
+    public ResponseEntity<Map<String, Object>> loginPartner(@RequestBody @Valid UserLoginDTO userLoginDTO) throws IOException {
 
         return super.login(userLoginDTO);
     }
@@ -50,7 +51,7 @@ public class PartnerAuthenticationController extends BaseAuthenticationControlle
     }
 
     @PostMapping("/token")
-    public ResponseEntity<Map<String, Object>> getNewUserRefreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+    public ResponseEntity<Map<String, Object>> getNewUserRefreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) throws IOException {
 
         return super.getNewRefreshToken(refreshTokenDTO);
     }
