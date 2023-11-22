@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "aws.endpoint",
+      "type": "java.lang.String",
+      "description": "Define AWS SDK's default endpoint URL"
+  }
+] }
