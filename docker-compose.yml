@@ -1,0 +1,88 @@
+version: "1"
+services:
+    cashew-api-dev:
+        image: henriquedelben/cashew
+        build:
+            context: .
+        container_name: cashew-api
+        ports:
+            - 8080:8080
+        command:
+            - "--spring.profiles.active=dev"
+        profiles:
+            - dev
+        depends_on:
+            localstack-bootstrap:
+                condition: service_completed_successfully
+                required: true
+            db:
+                condition: service_started
+                required: true
+            localstack:
+                condition: service_healthy
+                required: true
+        restart: on-failure
+    cashew-api-debug:
+        image: henriquedelben/cashew
+        build:
+            context: .
+        container_name: cashew-api
+        ports:
+            - 5005:5005
+        command:
+            - "--spring.profiles.active=dev"
+        profiles:
+            - debug
+        depends_on:
+            localstack-bootstrap:
+                condition: service_completed_successfully
+                required: true
+            db:
+                condition: service_started
+                required: true
+            localstack:
+                condition: service_healthy
+                required: true
+        restart: on-failure
+        environment:
+            _JAVA_OPTIONS: >
+                -Xdebug
+                -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    db:
+        image: mariadb
+        container_name: cashew-db
+        profiles:
+            - dev
+            - debug
+        environment:
+            - MARIADB_DATABASE=cashew
+            - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
+        ports:
+            - 3306:3306
+    localstack:
+        image: localstack/localstack
+        container_name: localstack
+        profiles:
+            - dev
+            - debug
+        ports:
+            - "0.0.0.0:4566:4566"            # LocalStack Gateway
+            - "0.0.0.0:4510-4559:4510-4559"  # external services port range
+        environment:
+            - DEBUG=${DEBUG-}
+            - DOCKER_HOST=unix:///var/run/docker.sock
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+    localstack-bootstrap:
+        image: henriquedelben/localstack-bootstrap
+        container_name: localstack-bootstrap
+        build:
+            context: docker/localstack-bootstrap
+        profiles:
+            - dev
+            - debug
+        depends_on:
+            localstack:
+                condition: service_healthy
+        ports:
+            - 31:31
