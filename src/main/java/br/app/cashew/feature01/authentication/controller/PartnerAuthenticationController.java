@@ -26,9 +26,9 @@ public class PartnerAuthenticationController extends BaseAuthenticationControlle
     @Autowired
     public PartnerAuthenticationController(
             PartnerAuthenticationServiceImpl partnerAuthenticationServiceImpl,
-            @Qualifier("partnerJwtService") BaseJwtService baseOAuth2TokenService) {
+            @Qualifier("partnerJwtService") BaseJwtService baseJwtService) {
 
-        super(baseOAuth2TokenService);
+        super(baseJwtService);
         this.partnerAuthenticationServiceImpl = partnerAuthenticationServiceImpl;
     }
 

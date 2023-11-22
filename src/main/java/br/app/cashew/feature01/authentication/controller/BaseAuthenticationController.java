@@ -24,7 +24,7 @@ import java.util.Map;
 @Component
 public abstract class BaseAuthenticationController<T> {
 
-    private final BaseJwtService baseOAuth2TokenService;
+    private final BaseJwtService baseJwtService;
     protected static final String ACCESS_TOKEN_PROPERTY_NAME = "access token";
     protected static final String REFRESH_TOKEN_PROPERTY_NAME = "refresh token";
     protected static final String USER_FINGERPRINT_PROPERTY_NAME = "userFingerprint";
@@ -32,12 +32,12 @@ public abstract class BaseAuthenticationController<T> {
     protected static final String MESSAGE_PROPERTY_NAME = "message";
 
     @Autowired
-    protected BaseAuthenticationController(BaseJwtService baseOAuth2TokenService) {
+    protected BaseAuthenticationController(BaseJwtService baseJwtService) {
 
-        this.baseOAuth2TokenService = baseOAuth2TokenService;
+        this.baseJwtService = baseJwtService;
     }
 
-    public ResponseEntity<Map<String, Object>> registrate(@RequestBody @Valid T userRegistrationDTO) throws IOException {
+    public ResponseEntity<Map<String, Object>> registrate(@RequestBody @Valid T userRegistrationDTO) {
 
         BaseAuthenticationService<T> authenticationService = getAuthenticationService();
 
@@ -71,11 +71,11 @@ public abstract class BaseAuthenticationController<T> {
 
     public abstract BaseAuthenticationService<T> getAuthenticationService();
 
-    public ResponseEntity<Map<String, Object>> getNewRefreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) throws IOException {
+    public ResponseEntity<Map<String, Object>> getNewRefreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
 
-        Jwt refreshToken = baseOAuth2TokenService.extractRefreshToken(refreshTokenDTO.getRefresh_token());
+        Jwt refreshToken = baseJwtService.extractRefreshToken(refreshTokenDTO.getRefresh_token());
 
-        if ((baseOAuth2TokenService.validateRefreshToken(refreshToken))) {
+        if ((baseJwtService.validateRefreshToken(refreshToken))) {
             throw new RefreshTokenIsInvalidException("Refresh token is invalid", REFRESH_TOKEN_PROPERTY_NAME);
         }
 
@@ -94,8 +94,8 @@ public abstract class BaseAuthenticationController<T> {
 
         String userFingerprint = TokenGeneratorUtility.generateToken();
 
-        String accessToken = baseOAuth2TokenService.generateAccessToken(authentication, userFingerprint);
-        String refreshToken = baseOAuth2TokenService.generateRefreshToken(authentication, userFingerprint);
+        String accessToken = baseJwtService.generateAccessToken(authentication, userFingerprint);
+        String refreshToken = baseJwtService.generateRefreshToken(authentication, userFingerprint);
 
         Map<String, Object> response = new HashMap<>();
         response.put(ACCESS_TOKEN_PROPERTY_NAME, accessToken);
