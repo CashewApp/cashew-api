@@ -17,7 +17,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,8 +24,8 @@ import java.util.Map;
 public abstract class BaseAuthenticationController<T> {
 
     private final BaseJwtService baseJwtService;
-    protected static final String ACCESS_TOKEN_PROPERTY_NAME = "access token";
-    protected static final String REFRESH_TOKEN_PROPERTY_NAME = "refresh token";
+    protected static final String ACCESS_TOKEN_PROPERTY_NAME = "access_token";
+    protected static final String REFRESH_TOKEN_PROPERTY_NAME = "refresh_token";
     protected static final String USER_FINGERPRINT_PROPERTY_NAME = "userFingerprint";
     protected static final String HEADER_REPRESENTATION_PROPERTY_NAME = "header";
     protected static final String MESSAGE_PROPERTY_NAME = "message";
@@ -53,7 +52,7 @@ public abstract class BaseAuthenticationController<T> {
     }
 
 
-    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody UserLoginDTO userLoginDTO) throws IOException {
+    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
 
         BaseAuthenticationService<T> authenticationService = getAuthenticationService();
 
