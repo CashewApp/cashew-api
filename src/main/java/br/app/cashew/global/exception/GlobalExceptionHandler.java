@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Map<String, String>>> handleEmailNotFoundException(EmailNotFoundException ex) {
 
         Map<String, Map<String, String>> errors = Collections.singletonMap(ERROR_KEY, Collections.singletonMap(ex.getField(), ex.getMessage()));
-        return new ResponseEntity<>(errors, HttpStatus.OK);
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(FingerprintDoesNotExists.class)
