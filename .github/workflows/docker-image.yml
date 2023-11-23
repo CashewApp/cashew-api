@@ -1,0 +1,26 @@
+name: Cashew-API Docker Image CI
+
+on:
+  push:
+    branches: [ "dev" ]
+    
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: docker login
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+        
+    - name: Build the Image
+      run: docker build --file Dockerfile --tag ${{secrets.DOCKER_USER}}/cashew:latest .
+
+    - name: Push The Image
+      run: docker push ${{secrets.DOCKER_USER}}/cashew
