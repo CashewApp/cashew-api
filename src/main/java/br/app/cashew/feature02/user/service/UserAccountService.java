@@ -223,14 +223,14 @@ public class UserAccountService {
         User user = userRepository.findByUserPublicKey(UUID.fromString(userPublicKey))
                 .orElseThrow(() -> new UserDoesNotExistsException("Usuario nao existe"));
 
-        if (cpf != null && validateCpf(cpf) && isCpfAvailable(cpf)) {
-            user.setCpf(cpf);
+        if (cpf != null && !(isCpfAvailable(cpf))) {
+            throw new CpfException("CPF nao disponivel", "cpf");
         }
         user.setCpf(cpf);
         userRepository.save(user);
     }
     public UniversityUser addUniversityAndCampusPreferences(String universityPublicKey, String campusPublicKey, String userPublicKey) {
-        // ver se o usuario nao excedeu o limite de preferencias salvas
+
         User user = userRepository.findByUserPublicKey(UUID.fromString(userPublicKey))
                 .orElseThrow(() -> new UserDoesNotExistsException("Usuario nao existe"));
 
