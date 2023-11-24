@@ -71,8 +71,8 @@ public class UserAccountService {
             // CPF is null in the user, set it if provided and validate
             String newCpf = userUpdateInfoDTO.getCpf();
             if (newCpf != null) {
-                if (!(validateCpf(newCpf)) || !(isCpfAvailable(newCpf))) {
-                    throw new CpfException("CPF inválido", "cpf");
+                if (!(isCpfAvailable(newCpf))) {
+                    throw new CpfException("CPF não disponível", "cpf");
                 }
                 user.setCpf(newCpf);
             }
@@ -89,75 +89,6 @@ public class UserAccountService {
         }
         userRepository.save(user);
         return false; // No changes or email is same/already in use
-    }
-
-
-    private boolean validateCpf(String cpf) {
-
-        if (!(cpf.matches("^\\d{11}$"))) {
-            return false;
-        }
-
-        if (cpf.equals("00000000000") || cpf.equals("11111111111") ||
-                cpf.equals("22222222222") || cpf.equals("33333333333") ||
-                cpf.equals("44444444444") || cpf.equals("55555555555") ||
-                cpf.equals("66666666666") || cpf.equals("77777777777") ||
-                cpf.equals("88888888888") || cpf.equals("99999999999") ||
-                (cpf.length() != 11)) {
-            return false;
-        }
-
-        char dig10;
-        char dig11;
-        int sm;
-        int i;
-        int r;
-        int num;
-        int peso;
-
-        try {
-            sm = 0;
-            peso = 10;
-
-            for (i=0; i<9; i++) {
-                num = cpf.charAt(i) - 48;
-                sm = sm + (num * peso);
-                peso = peso - 1;
-            }
-
-            r = 11 - (sm % 11);
-            if ((r == 10) || (r == 11)) {
-                dig10 = '0';
-            }
-            else {
-                dig10 = (char) (r + 48); // converte no respectivo caractere numerico
-            }
-
-            // Calculo do 2.º. Digito Verificador
-            sm = 0;
-            peso = 11;
-
-            for(i=0; i<10; i++) {
-                num = cpf.charAt(i) - 48;
-                sm = sm + (num * peso);
-                peso = peso - 1;
-            }
-
-            r = 11 - (sm % 11);
-            if ((r == 10) || (r == 11)) {
-                dig11 = '0';
-            }
-            else {
-                dig11 = (char) (r + 48);
-            }
-
-            // Verifica se os digitos calculados conferem com os digitos informados.
-
-            return (dig10 == cpf.charAt(9)) && (dig11 == cpf.charAt(10));
-        }
-        catch (InputMismatchException erro) {
-                return false;
-        }
     }
 
     private boolean isCpfAvailable(String cpf) {
@@ -278,4 +209,6 @@ public class UserAccountService {
     private boolean isUniversityAndCampusAlreadySavedByUser(User user, University university, Campus campus) {
         return universityUserRepository.existsByUserAndUniversityAndCampus(user, university, campus);
     }
+
+    // TODO refatorar servicos e endpoints de atualizacao de email, cpf e nome em servicos separados
 }

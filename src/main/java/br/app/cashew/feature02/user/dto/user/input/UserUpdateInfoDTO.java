@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.br.CPF;
 
 @Getter
 @Setter
@@ -20,5 +21,6 @@ public class UserUpdateInfoDTO {
     private String name;
 
     @Size(min = 11, max = 11)
+    @CPF(message = "CPF invalido")
     private String cpf;
 }

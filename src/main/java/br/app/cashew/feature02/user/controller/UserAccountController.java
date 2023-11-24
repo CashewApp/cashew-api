@@ -2,6 +2,7 @@ package br.app.cashew.feature02.user.controller;
 
 import br.app.cashew.feature01.authentication.dto.user.UserChangePasswordDTO;
 import br.app.cashew.feature01.authentication.service.authentication.user.UserPasswordService;
+import br.app.cashew.feature02.user.dto.user.CpfDTO;
 import br.app.cashew.feature02.user.dto.user.input.UniversityUserRequestDTO;
 import br.app.cashew.feature02.user.dto.user.input.UserEmailChangeDTO;
 import br.app.cashew.feature02.user.dto.user.input.UserUpdateInfoDTO;
@@ -55,11 +56,10 @@ public class UserAccountController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/info")
-    public ResponseEntity<Void> addCpf(@RequestBody Map<String, String> cpf, Authentication authentication) {
-        userAccountService.addCpf(cpf.get("cpf"), authentication.getName());
+    @PostMapping("/info/cpf")
+    public ResponseEntity<Void> addCpf(@RequestBody @Valid CpfDTO cpf, Authentication authentication) {
+        userAccountService.addCpf(cpf.getCpf(), authentication.getName());
         return new ResponseEntity<>(HttpStatus.OK);
-        // TODO criar hibernate constraint para validar CPF
     }
 
     @PutMapping("/info")
