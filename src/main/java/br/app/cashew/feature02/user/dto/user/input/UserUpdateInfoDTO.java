@@ -22,5 +22,3 @@ public class UserUpdateInfoDTO {
     @Size(min = 11, max = 11)
     private String cpf;
 }
-
-// LEMBRETES front end tem q adicionar mascara de email e tem q fazer o get das informacoes antes p cache
