@@ -11,7 +11,7 @@ import br.app.cashew.feature02.user.exception.universityuser.UniversityAndCampus
 import br.app.cashew.feature02.user.exception.universityuser.UniversityAndCampusPreferenceAlreadyExists;
 import br.app.cashew.feature02.user.model.EmailChangeRequest;
 import br.app.cashew.feature02.user.repository.EmailChangeRequestRepository;
-import br.app.cashew.feature02.user.service.email.EmailService;
+import br.app.cashew.feature02.user.service.email.EmailSenderService;
 import br.app.cashew.feature03.cafeteria.exception.campus.CampusDoesNotExistsException;
 import br.app.cashew.feature03.cafeteria.exception.university.UniversityDoesNotExistsException;
 import br.app.cashew.feature03.cafeteria.model.Campus;
@@ -34,7 +34,7 @@ import java.util.*;
 public class UserAccountService {
 
     private final UserRepository userRepository;
-    private final EmailService emailService;
+    private final EmailSenderService emailSenderService;
     private final EmailChangeRequestRepository emailChangeRequestRepository;
     private final UniversityUserRepository universityUserRepository;
     private final UniversityRepository universityRepository;
@@ -43,14 +43,14 @@ public class UserAccountService {
     @Autowired
     public UserAccountService(
             UserRepository userRepository,
-            EmailService emailService,
+            EmailSenderService emailSenderService,
             EmailChangeRequestRepository emailChangeRequestRepository,
             UniversityUserRepository universityUserRepository,
             UniversityRepository universityRepository,
             CampusRepository campusRepository) {
 
         this.userRepository = userRepository;
-        this.emailService = emailService;
+        this.emailSenderService = emailSenderService;
         this.emailChangeRequestRepository = emailChangeRequestRepository;
         this.universityUserRepository = universityUserRepository;
         this.universityRepository = universityRepository;
@@ -83,7 +83,7 @@ public class UserAccountService {
 
         if (!newEmail.equals(user.getEmail()) && !(isNewEmailAlreadyInUse)) {
             String pin = createEmailChangeRequest(user);
-            emailService.sendEmailConfirmationEmail(newEmail, pin);
+            emailSenderService.sendEmailConfirmationEmail(newEmail, pin);
             userRepository.save(user);
             return true; // Email is different and not in use, sent confirmation email
         }
@@ -160,6 +160,7 @@ public class UserAccountService {
         user.setCpf(cpf);
         userRepository.save(user);
     }
+
     public UniversityUser addUniversityAndCampusPreferences(String universityPublicKey, String campusPublicKey, String userPublicKey) {
 
         User user = userRepository.findByUserPublicKey(UUID.fromString(userPublicKey))

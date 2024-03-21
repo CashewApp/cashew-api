@@ -11,12 +11,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailService {
+public class EmailSenderService {
 
     private final JavaMailSender javaMailSender;
 
     @Autowired
-    public EmailService(JavaMailSender javaMailSender) {
+    public EmailSenderService(JavaMailSender javaMailSender) {
 
         this.javaMailSender = javaMailSender;
     }
