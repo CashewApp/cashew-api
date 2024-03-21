@@ -13,7 +13,7 @@ import br.app.cashew.feature01.authentication.service.authentication.user.UserAu
 import br.app.cashew.feature01.authentication.service.authentication.user.UserPasswordService;
 import br.app.cashew.feature01.authentication.service.jwt.BaseJwtService;
 import br.app.cashew.feature01.authentication.util.token.TokenGeneratorUtility;
-import br.app.cashew.feature02.user.service.email.EmailService;
+import br.app.cashew.feature02.user.service.email.EmailSenderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,7 +31,7 @@ import java.util.Optional;
 @RequestMapping("/auth/user")
 public class UserAuthenticationController extends BaseAuthenticationController<UserRegistrationDTO>{
     private final UserAuthenticationServiceImpl userAuthenticationServiceImpl;
-    private final EmailService emailService;
+    private final EmailSenderService emailSenderService;
     private final UserPasswordService userPasswordService;
 
 
@@ -39,12 +39,12 @@ public class UserAuthenticationController extends BaseAuthenticationController<U
     public UserAuthenticationController(
             UserAuthenticationServiceImpl userAuthenticationServiceImpl,
             @Qualifier("userJwtService") BaseJwtService baseOAuth2TokenService,
-            EmailService emailService,
+            EmailSenderService emailSenderService,
             UserPasswordService userPasswordService) {
 
         super(baseOAuth2TokenService);
         this.userAuthenticationServiceImpl = userAuthenticationServiceImpl;
-        this.emailService = emailService;
+        this.emailSenderService = emailSenderService;
         this.userPasswordService = userPasswordService;
     }
 
@@ -90,7 +90,7 @@ public class UserAuthenticationController extends BaseAuthenticationController<U
         String token = userPasswordService.generatePasswordChangeRequest(user.get());
 
         try {
-            emailService.sendForgotPasswordEmail(userForgotPasswordTO.getEmail(), token);
+            emailSenderService.sendForgotPasswordEmail(userForgotPasswordTO.getEmail(), token);
         }
         catch (Exception e) {
             System.out.println((Arrays.toString(e.getStackTrace())));

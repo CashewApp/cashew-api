@@ -62,6 +62,8 @@ public class UserAccountController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+
+
     @PutMapping("/info")
     public ResponseEntity<String> updateNameAndCpfAndEmail(@RequestBody @Valid UserUpdateInfoDTO userUpdateInfoDTO, Authentication authentication) {
 
